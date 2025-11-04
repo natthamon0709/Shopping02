@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EverFresh Mart — สมัครสมาชิก</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- External CSS -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Internal CSS: Grid + เติมสไตล์ฟอร์มให้แมตช์หน้า index -->
+  <style>
+    .gridcontainer{
+      display:grid;
+      grid-template-areas:
+        "header header header header header"
+        "lside  main   main   main   main"
+        "footer footer footer footer footer";
+      grid-template-columns: 240px 1fr 1fr 1fr 1fr;
+      grid-gap:12px; padding:12px; min-height:100dvh;
+      background:var(--bg);
+    }
+    .item-H{grid-area:header;}
+    .item-L{grid-area:lside;}
+    .item-M{grid-area:main;}
+    .item-F{grid-area:footer;}
+
+    /* กล่องเนื้อหาให้โทนเดียวกับ card ในหน้า index */
+    .section.narrow{
+      max-width:880px; margin:0 auto;
+    }
+    .register-form{
+      background:#fff; border:1px solid #e5f6f0; border-radius:16px;
+      box-shadow:0 8px 24px rgba(16,185,129,.08);
+      padding:18px;
+    }
+    .grid-2{
+      display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px;
+    }
+    .grid-2 .full{grid-column:1 / -1;}
+    .field label{
+      display:block; font-weight:600; margin-bottom:6px; color:#0f172a;
+    }
+    .field input[type="text"],
+    .field input[type="tel"],
+    .field input[type="email"],
+    .field input[type="date"],
+    .field textarea{
+      width:100%; border:1px solid #d1fae5; border-radius:12px;
+      padding:12px 14px; background:#fff;
+      outline:none; transition:border-color .15s, box-shadow .15s;
+    }
+    .field textarea{ resize:vertical; }
+    .field input:focus,
+    .field textarea:focus{
+      border-color:#34d399; box-shadow:0 0 0 3px rgba(52,211,153,.2);
+    }
+    .radios{display:flex; gap:16px; align-items:center;}
+    .radios input{transform:translateY(1px);}
+    .help{display:block; color:#64748b; font-size:.85rem; margin-top:4px;}
+    .form-actions{
+      display:flex; gap:10px; justify-content:flex-end; margin-top:14px;
+    }
+
+    /* ให้เมนูซ้าย active เมื่ออยู่หน้านี้ */
+    .sidebar .nav a[href="register.html"]{
+      background:#ecfdf5; border:1px solid #99f6e4;
+      border-radius:12px; font-weight:700;
+    }
+
+    /* รองรับจอเล็ก */
+    @media (max-width: 768px){
+      .gridcontainer{grid-template-columns: 1fr; grid-template-areas:
+        "header" "lside" "main" "footer";}
+      .grid-2{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gridcontainer">
+    <!-- Header (โทนเดียวกับหน้า index) -->
+    <header class="item item-H header is-sticky">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="spacer"></div>
+        <a href="register.html" class="chip">สมัครสมาชิก</a>
+      </div>
+
+      <!-- แถวหลัก -->
+      <div class="header-main">
+        <div class="brand">
+          <!-- Inline CSS -->
+          <img src="img/logo.png" alt="FreshFresh" style="height:100px; border-radius:10px; margin-right:10px;" />
+          <h1 class="brand-title">FreshFresh </h1>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="item item-L sidebar">
+      <h2 class="sidebar-title">เมนู</h2>
+      <ul class="nav">
+        <li><a href="index.html">หน้าสินค้า</a></li>
+        <li><a href="register.html">สมัครสมาชิก</a></li>
+      </ul>
+
+      <div class="promo">
+        <h3>สิทธิ์สมาชิก</h3>
+        <ul class="list">
+          <li>คูปองลดรายสัปดาห์</li>
+          <li>สะสมแต้มแลกของ</li>
+          <li>ดีลพิเศษออนไลน์</li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="item item-M main">
+      <section class="section narrow">
+        <div class="section-head">
+          <h3>สมัครสมาชิก EverFresh</h3>
+          <span class="hint">กรอกข้อมูลให้ครบถ้วนแล้วกด “สมัครสมาชิก & ส่งข้อมูล”</span>
+        </div>
+
+        <!-- ฟอร์มส่งไป httpbin ตามโจทย์ -->
+        <form action="https://httpbin.org/post" method="post" class="register-form" novalidate>
+          <div class="grid-2">
+            <div class="field">
+              <label for="fullname">ชื่อ-สกุล</label>
+              <input id="fullname" name="fullname" type="text" placeholder="เช่น ปัญชญา ใจดี"
+                     autocomplete="name" required />
+            </div>
+
+            <div class="field">
+              <label>เพศ</label>
+              <div class="radios" role="radiogroup" aria-label="เลือกเพศ">
+                <label><input type="radio" name="gender" value="หญิง" required> หญิง</label>
+                <label><input type="radio" name="gender" value="ชาย"> ชาย</label>
+                <label><input type="radio" name="gender" value="ไม่ระบุ"> ไม่ระบุ</label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="birthdate">วันที่เกิด</label>
+              <input id="birthdate" name="birthdate" type="date" autocomplete="bday" required />
+            </div>
+
+            <div class="field">
+              <label for="phone">เบอร์โทรศัพท์</label>
+              <input id="phone" name="phone" type="tel" placeholder="0X-XXXX-XXXX"
+                     pattern="0[0-9]{1}-[0-9]{4}-[0-9]{4}" autocomplete="tel" required />
+              <small class="help">รูปแบบ 0X-XXXX-XXXX</small>
+            </div>
+
+            <div class="field">
+              <label for="email">อีเมล</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com"
+                     autocomplete="email" required />
+            </div>
+
+            <div class="field full">
+              <label for="address">ที่อยู่สำหรับจัดส่งสินค้า</label>
+              <textarea id="address" name="address" rows="4"
+                        placeholder="บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์"
+                        autocomplete="street-address" required></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="reset" class="btn ghost">ล้างค่า</button>
+            <button type="submit" class="btn">สมัครสมาชิก & ส่งข้อมูล</button>
+          </div>
+        </form>
+
+        <!-- <p class="note">
+          เมื่อส่งแล้ว ให้ดูผลที่ <code>https://httpbin.org/post</code> ในคีย์ <code>form</code>
+        </p> -->
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="item item-F footer">
+      <address>
+        EverFresh Mart — สาขาบางนา<br>
+        88/8 ถ.บางนา–ตราด แขวงบางนา เขตบางนา กรุงเทพฯ 10260<br>
+        โทร: 02-123-4567 • อีเมล: care@everfreshmart.co.th
+      </address>
+    </footer>
+  </div>
+</body>
+</html>

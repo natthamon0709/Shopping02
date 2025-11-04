@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EverFresh Mart — ช้อปสินค้า</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Kanit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Internal CSS: โครง Grid + คุมการแสดงผลหมวด -->
+  <style>
+    .gridcontainer{
+      display:grid;
+      grid-template-areas:
+        "header header header header header"
+        "lside  main   main   main   main"
+        "footer footer footer footer footer";
+      grid-template-columns: 250px 1fr 1fr 1fr 1fr;
+      grid-gap:12px;
+      padding:12px;
+      min-height:100dvh;
+      background:var(--bg);
+    }
+    .item-H{grid-area:header;}
+    .item-L{grid-area:lside;}
+    .item-M{grid-area:main;}
+    .item-F{grid-area:footer;}
+
+    /* ซ่อนทุกหมวดไว้ก่อน ให้แสดงเมื่อกดจาก Left bar */
+    .section{display:none;}
+    .section.active{display:block;}
+
+    /* ลิงก์หมวดที่กำลังเลือก */
+    .sidebar .nav a.active{
+      background:#ecfdf5; border:1px solid #99f6e4; border-radius:12px; font-weight:700;
+    }
+
+    /* กล่องข้อความชวนเลือกหมวด */
+    .choose{
+      background:#ffffff; border:1px dashed #99f6e4; color:#065f46;
+      padding:14px; border-radius:12px; margin:8px 0 14px;
+    }
+
+    /* ปุ่มดูทั้งหมด (เสริมให้สอดคล้องกับข้อความ) */
+    .showall-wrap{display:flex; justify-content:flex-end; margin:8px 0 14px;}
+    #showAll{ text-decoration:none; }
+  </style>
+</head>
+
+<body>
+  <div class="gridcontainer">
+    <!-- Header -->
+    <header class="item item-H header is-sticky">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="spacer"></div>
+        <a href="register.html" class="chip">สมัครสมาชิก</a>
+      </div>
+
+      <!-- แถวหลัก -->
+      <div class="header-main">
+        <div class="brand">
+          <!-- Inline CSS ตกแต่งโลโก้ -->
+          <img src="img/logo.png" alt="FreshFresh" style="height:100px; border-radius:10px; margin-right:10px;" />
+          <h1 class="brand-title">FreshFresh</h1>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="item item-L sidebar">
+      <h2 class="sidebar-title">หมวดหมู่</h2>
+      <ul class="nav" id="leftNav">
+        <li><a href="#produce">ผักผลไม้</a></li>
+        <li><a href="#meat">เนื้อสัตว์ & อาหารทะเล</a></li>
+        <li><a href="#dairy">นม เนย ชีส</a></li>
+        <li><a href="#dry">ของแห้ง & บะหมี่กึ่งฯ</a></li>
+        <li><a href="#beverage">เครื่องดื่ม</a></li>
+        <li><a href="#home">ของใช้ในบ้าน</a></li>
+      </ul>
+
+      <h3 class="sidebar-title mt">ลิงก์</h3>
+      <ul class="nav">
+        <li><a href="register.html">สมัครสมาชิก</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main -->
+    <main class="item item-M main" id="all">
+      <!-- แบนเนอร์คู่ -->
+      <section class="banners">
+        <a class="banner"><img src="https://o2o-static.lotuss.com/Home/Static-Banner/Y2025/WK44/Newcustomer-100-Coin-W43-Static0-1.jpg" alt="แจกคอยน์ลูกค้าใหม่" /></a>
+        <a class="banner"><img src="https://o2o-static.lotuss.com/Home/Static-Banner/Y2025/WK44/FS1111_Static0-2.jpg" alt="รับคอยน์ x11" /></a>
+      </section>
+
+      <!-- ปุ่มดูทั้งหมดให้ตรงกับคำบอก -->
+      <div class="showall-wrap">
+        <a href="#all" id="showAll" class="btn ghost pill">ดูสินค้าทั้งหมด</a>
+      </div>
+
+      <!-- ข้อความเริ่มต้น -->
+      <p class="choose" id="chooseMsg">เลือก “หมวดหมู่” ทางซ้ายเพื่อแสดงสินค้า หรือกด “ดูสินค้าทั้งหมด” ด้านบนเพื่อแสดงทุกหมวด</p>
+
+      <!-- ===== ฟอร์มรวม: ส่งไป httpbin ===== -->
+      <form action="https://httpbin.org/post" method="post" class="product-form" id="productForm">
+        <!-- ผักผลไม้ -->
+        <section id="produce" class="section">
+          <div class="section-head">
+            <h3>ผักผลไม้</h3>
+            <span class="hint">ของสดพร้อมส่ง</span>
+          </div>
+          <fieldset class="product-grid">
+            <legend>เลือกสินค้า — ผักผลไม้</legend>
+
+            <article class="card">
+              <span class="disc-badge">สดใหม่</span>
+              <!-- แอปเปิล -->
+              <img class="card-img" src="https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=800&auto=format&fit=crop&q=80" alt="แอปเปิลฟูจิ 1 กก." />
+              <div class="card-body">
+                <h4 class="card-title">แอปเปิลฟูจิ 1 กก.</h4>
+                <div class="price-row"><span class="price">฿89.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_apple" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <!-- กล้วย -->
+              <img class="card-img" src="https://fit-d.com/image_webp/f?src=./uploads/food/5f6c8c69a8f190b979f93f02475aac80.jpg" alt="กล้วยหอม 1 หวี" />
+              <div class="card-body">
+                <h4 class="card-title">กล้วยหอม 1 หวี</h4>
+                <div class="price-row"><span class="price">฿39.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_banana" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <!-- กรีนโอ๊ค -->
+              <img class="card-img" src="https://www.sgethai.com/wp-content/uploads/2023/03/17-3.jpg" alt="ผักสลัดกรีนโอ๊ค 200 กรัม" />
+              <div class="card-body">
+                <h4 class="card-title">ผักสลัดกรีนโอ๊ค 200 กรัม</h4>
+                <div class="price-row"><span class="price">฿39.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_lettuce" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+          </fieldset>
+        </section>
+
+        <!-- เนื้อสัตว์ & อาหารทะเล -->
+        <section id="meat" class="section">
+          <div class="section-head">
+            <h3>เนื้อสัตว์ & อาหารทะเล</h3>
+            <span class="hint">คัดเกรดแช่เย็น</span>
+          </div>
+          <fieldset class="product-grid">
+            <legend>เลือกสินค้า — เนื้อสัตว์ & อาหารทะเล</legend>
+
+            <article class="card">
+              <!-- อกไก่ -->
+              <img class="card-img" src="https://images.mango-prod.siammakro.cloud/product-images/7606382067907-9e6eedad-bf00-4d35-ab4a-ea5a64f09b19.jpeg" alt="อกไก่ 1 กก." />
+              <div class="card-body">
+                <h4 class="card-title">อกไก่ 1 กก.</h4>
+                <div class="price-row"><span class="price">฿95.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_chicken" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <!-- ปลาซาบะชิ้น-->
+              <img class="card-img" src="https://simiranfood.com/upload-img/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B8%84%E0%B9%89%E0%B8%B2%E0%B9%81%E0%B8%81%E0%B9%89%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88/%E0%B8%9B%E0%B8%A5%E0%B8%B2/30.png" alt="ปลาซาบะชิ้น 500 กรัม" />
+              <div class="card-body">
+                <h4 class="card-title">ปลาซาบะชิ้น 500 กรัม</h4>
+                <div class="price-row"><span class="price">฿129.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_mackerel" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <!-- กุ้งแชบ๊วย-->
+              <img class="card-img" src="https://www.hormchuy.com/backend/Upload/upload_files/79084002_1335515346656901_9205461894381436928_n.jpg" alt="กุ้งแชบ๊วย 1 กก." />
+              <div class="card-body">
+                <h4 class="card-title">กุ้งแชบ๊วย 1 กก.</h4>
+                <div class="price-row"><span class="price">฿289.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_shrimp" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+          </fieldset>
+        </section>
+
+        <!-- นม เนย ชีส -->
+        <section id="dairy" class="section">
+          <div class="section-head">
+            <h3>นม เนย ชีส</h3>
+            <span class="hint">ของแช่เย็นจากแหล่งคุณภาพ</span>
+          </div>
+          <fieldset class="product-grid">
+            <legend>เลือกสินค้า — นม เนย ชีส</legend>
+
+            <article class="card">
+              <img class="card-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCYp3LYAJMma6DuwpoOZR6ttHIkMeqxJ_uqQ&s" alt="นมพาสเจอร์ไรซ์ 1 ลิตร" />
+              <div class="card-body">
+                <h4 class="card-title">นมพาสเจอร์ไรซ์ 1 ลิตร</h4>
+                <div class="price-row"><span class="price">฿49.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_milk" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <img class="card-img" src="https://www.anchordairy.com/content/dam/anchordairy/thailand/images/product-images/anchor-thailand-unsalted-butter-200g-teaser.png" alt="เนยจืด 200 กรัม" />
+              <div class="card-body">
+                <h4 class="card-title">เนยจืด 200 กรัม</h4>
+                <div class="price-row"><span class="price">฿75.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_butter" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <img class="card-img" src="https://cf.shopee.co.th/file/sg-11134201-824ia-mfmq9quhr18r38" alt="ชีสมอซซาเรลลา 250 กรัม" />
+              <div class="card-body">
+                <h4 class="card-title">ชีสมอซซาเรลลา 250 กรัม</h4>
+                <div class="price-row"><span class="price">฿109.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_cheese" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+          </fieldset>
+        </section>
+
+        <!-- ของแห้ง & บะหมี่กึ่งฯ -->
+        <section id="dry" class="section">
+          <div class="section-head">
+            <h3>ของแห้ง & บะหมี่กึ่งฯ</h3>
+            <span class="hint">เก็บได้นาน ตุนคุ้ม</span>
+          </div>
+          <fieldset class="product-grid">
+            <legend>เลือกสินค้า — ของแห้ง & บะหมี่กึ่งฯ</legend>
+
+            <article class="card">
+              <span class="disc-badge">-8%</span>
+              <img class="card-img" src="https://img.lazcdn.com/g/p/f5e54a7221bd32e6b8d4c0c0af1db1d9.jpg_960x960q80.jpg_.webp" alt="ผงปรุงรส 155 กรัม" />
+              <div class="card-body">
+                <h4 class="card-title">ผงปรุงรส 155 กรัม</h4>
+                <div class="price-row"><span class="price">฿24.00</span><span class="price-old">฿26.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_seasoning" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <img class="card-img" src="https://img.lazcdn.com/g/p/b03b38fe387ae9dc153efd7c99210cd3.jpg_720x720q80.jpg" alt="บะหมี่กึ่งสำเร็จรูป แพ็ค 30" />
+              <div class="card-body">
+                <h4 class="card-title">บะหมี่กึ่งสำเร็จรูป แพ็ค 30</h4>
+                <div class="price-row"><span class="price">฿180.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_noodle" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <!-- ข้าวสารเป็นกระสอบ/ถุง -->
+              <img class="card-img" src="https://media-stark.gourmetmarketthailand.com/products/cover/8851042321057-1.webp" alt="ข้าวหอม 5 กก." />
+              <div class="card-body">
+                <h4 class="card-title">ข้าวหอม 5 กก.</h4>
+                <div class="price-row"><span class="price">฿179.00</span><span class="price-old">฿189.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_rice5" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+          </fieldset>
+        </section>
+
+        <!-- เครื่องดื่ม -->
+        <section id="beverage" class="section">
+          <div class="section-head">
+            <h3>เครื่องดื่ม</h3>
+            <span class="hint">ชื่นใจทุกวัน</span>
+          </div>
+          <fieldset class="product-grid">
+            <legend>เลือกสินค้า — เครื่องดื่ม</legend>
+
+            <article class="card">
+              <img class="card-img" src="https://inwfile.com/s-fr/zom27v.jpg" alt="น้ำแร่ 1.5 ลิตร (แพ็ค)" />
+              <div class="card-body">
+                <h4 class="card-title">น้ำแร่ 1.5 ลิตร (แพ็ค)</h4>
+                <div class="price-row"><span class="price">฿69.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_water" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <img class="card-img" src="https://img.lazcdn.com/g/p/961120ab59a6834b101dd65b1716f3de.jpg_960x960q80.jpg_.webp" alt="น้ำส้มพาสเจอร์ไรซ์ 1 ลิตร" />
+              <div class="card-body">
+                <h4 class="card-title">น้ำส้มพาสเจอร์ไรซ์ 1 ลิตร</h4>
+                <div class="price-row"><span class="price">฿55.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_orange" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <img class="card-img" src="https://img.lazcdn.com/g/ff/kf/S33e2d069f1da4241b8360d4a87e0fd66A.jpg_720x720q80.jpg" alt="ชาดำเย็น 500 มล." />
+              <div class="card-body">
+                <h4 class="card-title">ชาดำเย็น 500 มล.</h4>
+                <div class="price-row"><span class="price">฿25.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_tea" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+          </fieldset>
+        </section>
+
+        <!-- ของใช้ในบ้าน -->
+        <section id="home" class="section">
+          <div class="section-head">
+            <h3>ของใช้ในบ้าน</h3>
+            <span class="hint">จำเป็นประจำวัน</span>
+          </div>
+          <fieldset class="product-grid">
+            <legend>เลือกสินค้า — ของใช้ในบ้าน</legend>
+
+            <article class="card">
+              <img class="card-img" src="https://pim-cdn0.ofm.co.th/categories/contents/pim-product-content-20230307-143131.jpg" alt="ทิชชู่ม้วน 12 ม้วน" />
+              <div class="card-body">
+                <h4 class="card-title">ทิชชู่ม้วน 12 ม้วน</h4>
+                <div class="price-row"><span class="price">฿129.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_tissue" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <img class="card-img" src="https://media.allonline.7eleven.co.th/pdmain/390038_00_Pao.jpg" alt="ผงซักฟอก 3000 กรัม" />
+              <div class="card-body">
+                <h4 class="card-title">ผงซักฟอก 3000 กรัม</h4>
+                <div class="price-row"><span class="price">฿189.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_detergent" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <img class="card-img" src="https://shop.tripinchiangmai.com/wp-content/uploads/2020/04/sunlight-plus-antibac-dishwashing-liquid-750ml.jpg" alt="น้ำยาล้างจาน 750 มล." />
+              <div class="card-body">
+                <h4 class="card-title">น้ำยาล้างจาน 750 มล.</h4>
+                <div class="price-row"><span class="price">฿35.00</span></div>
+                <label class="qty">จำนวน: <input type="number" name="qty_dishsoap" min="0" value="0" inputmode="numeric" /></label>
+                <button class="btn full" type="button" onclick="this.previousElementSibling.querySelector('input').stepUp()">ใส่ตะกร้า +</button>
+              </div>
+            </article>
+          </fieldset>
+        </section>
+
+        <!-- ปุ่มส่งฟอร์มรวม -->
+        <div class="form-actions">
+          <button type="reset" class="btn ghost">ล้างค่า</button>
+          <button type="submit" class="btn">สั่งซื้อ & ส่งข้อมูล</button>
+        </div>
+      </form>
+    </main>
+
+    <!-- Footer -->
+    <footer class="item item-F footer">
+      <address>
+        FreshFresh Mart — สาขาบางนา<br>
+        88/8 ถ.บางนา–ตราด แขวงบางนา เขตบางนา กรุงเทพฯ 10260<br>
+        โทร: 02-123-4567 • อีเมล: care@everfreshmart.co.th
+      </address>
+    </footer>
+  </div>
+
+  <!-- JS: คุมการ แสดง/ซ่อน หมวด -->
+  <script>
+    (function(){
+      const sections = Array.from(document.querySelectorAll('main .section'));
+      const leftLinks = Array.from(document.querySelectorAll('#leftNav a[href^="#"]'));
+      const showAllLink = document.getElementById('showAll');
+      const chooseMsg = document.getElementById('chooseMsg');
+
+      function setActiveLink(id){
+        leftLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+
+      function showSection(id){
+        if(id === 'all'){ // โชว์ทุกหมวด
+          sections.forEach(s => s.classList.add('active'));
+          if(chooseMsg) chooseMsg.style.display = 'none';
+          setActiveLink(''); // ไม่มี active เฉพาะเมื่อเป็น "ทั้งหมด"
+          return;
+        }
+        // โชว์แค่หมวดที่เลือก
+        sections.forEach(s => s.classList.toggle('active', s.id === id));
+        if(chooseMsg) chooseMsg.style.display = 'none';
+        setActiveLink(id);
+        // เลื่อนไปยังหมวดที่แสดง
+        const el = document.getElementById(id);
+        if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+      }
+
+      // ผูกคลิกเมนูซ้าย
+      leftLinks.forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const id = a.getAttribute('href').slice(1);
+          history.replaceState(null,'','#'+id);
+          showSection(id);
+        });
+      });
+
+      // ปุ่ม "ดูสินค้าทั้งหมด"
+      if(showAllLink){
+        showAllLink.addEventListener('click', (e)=>{
+          e.preventDefault();
+          history.replaceState(null,'','#all');
+          showSection('all');
+        });
+      }
+
+      // โหลดตาม hash ถ้ามี
+      if(location.hash){
+        const id = location.hash.slice(1);
+        if(id === 'all'){ showSection('all'); }
+        else if(document.getElementById(id)){ showSection(id); }
+      }
+      // ถ้าไม่มี hash: ซ่อนทุกหมวดไว้ (ตาม CSS) และโชว์ข้อความเลือกหมวด
+    })();
+  </script>
+</body>
+</html>
